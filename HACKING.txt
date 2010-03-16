@@ -1,0 +1,16 @@
+Development setup
+=================
+
+  $ python bootstrap.py
+  $ bin/buildout
+
+  $ sudo bin/pythonselect 2.7
+
+Release HOWTO
+=============
+
+  1. Check version in setup.py
+  2. Update NEWS.txt (rename 'dev' to release version)
+  3. Verify release tarball (``python setup.py sdist``; look in dist/)
+  4. Release to PyPI (``python setup.py sdist register upload``)
+
