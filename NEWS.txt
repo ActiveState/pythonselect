@@ -1,0 +1,14 @@
+.. This is your project NEWS file which will contain the release notes.
+.. See http://bitbucket.org/ianb/pip/src/tip/docs/news.txt for an example 
+.. NEWS.txt content.
+.. This file will be appended to your project's long description.
+
+News
+====
+
+1.0b1
+-----
+
+* Initial import from Komodo source: mozilla/support/set-curr-python.py
+
+
