@@ -13,6 +13,9 @@ install_requires = [
     # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
 ]
 
+if not sys.platform.startswith('darwin'):
+    raise SystemExit, "error: pythonselect-%s only works on MacOSX, not %s" % (
+        version, sys.platform)
 
 setup(name='pythonselect',
       version=version,
