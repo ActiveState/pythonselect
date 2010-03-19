@@ -6,6 +6,11 @@
 News
 ====
 
+1.0b2
+-----
+
+* Prevent setup.py from running on non-MacOSX platforms
+
 1.0b1
 -----
 
