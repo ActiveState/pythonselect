@@ -11,7 +11,6 @@
   Note: We are talking about a non-system framework Python install. I.e. a
   Python installed in '/Library/Frameworks' and '/usr/local/bin'.
 """
-import sys
 import os
 
 
@@ -39,13 +38,4 @@ def set_curr_python(pyver):
             os.remove(bin_path)
         if os.path.exists(fmwk_path):
             os.symlink(fmwk_path, bin_path)
-
-
-def main():
-    if len(sys.argv[1:]) != 1:
-        sys.stderr.write("pythonselect: error: incorrect number "
-                         "of arguments\n\n")
-        sys.stderr.write(__doc__)
-        sys.exit(1) 
-    set_curr_python(sys.argv[1])
 

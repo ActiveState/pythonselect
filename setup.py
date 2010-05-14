@@ -41,12 +41,13 @@ setup(name='pythonselect',
       url='http://bitbucket.org/activestate/pythonselect',
       license='MIT',
       packages=find_packages('src'),
-      package_dir = {'': 'src'},include_package_data=True,
+      package_dir = {'': 'src'},
+      include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
       entry_points={
           'console_scripts': [
-              'pythonselect = pythonselect:main',
+              'pythonselect = pythonselect.command:main',
           ]
       },
       )
