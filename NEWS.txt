@@ -6,6 +6,11 @@
 News
 ====
 
+1.0b3
+-----
+
+* Added support for pypm, virtualenv, easy_install and pip
+
 1.0b2
 -----
 
