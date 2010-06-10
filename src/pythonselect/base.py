@@ -1,16 +1,5 @@
 # Based on 
 # http://svn.activestate.com/activestate/checkout/komodo/trunk/mozilla/support/set-curr-python.py
-"""Set the current Python to the given version.
-
-  Usage:
-    sudo pythonselect <pyver>
-
-  where "<pyver>" is "<major>.<minor>" for a Python installed under
-  '/Library/Frameworks'.
-
-  Note: We are talking about a non-system framework Python install. I.e. a
-  Python installed in '/Library/Frameworks' and '/usr/local/bin'.
-"""
 import os
 
 
