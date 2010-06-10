@@ -11,14 +11,19 @@
 """
 
 import sys
-from pythonselect.base import set_curr_python
+
+from pythonselect.base import set_curr_python, get_installed_pyvers, \
+                              get_default_pyver
 
 
 def main():
     if len(sys.argv[1:]) != 1:
-        sys.stderr.write("pythonselect: error: incorrect number "
-                         "of arguments\n\n")
-        sys.stderr.write(__doc__)
-        sys.exit(1) 
-    set_curr_python(sys.argv[1])
+        # Print the list of Pythons installed when no argument is passed
+        default_pyver = get_default_pyver()
+        for pyver in get_installed_pyvers():
+            status = 'current' if pyver == default_pyver else (
+                'type "sudo pythonselect %s" to set as current' % pyver)
+            print('\t%s\t(%s)' % (pyver, status))
+    else:
+        set_curr_python(sys.argv[1])
     

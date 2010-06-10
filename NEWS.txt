@@ -9,12 +9,13 @@ News
 1.0b3
 -----
 
-* Added support for pypm, virtualenv, easy_install and pip
+* New: Show list of installed Python versions without any argument
+* New: support for pypm, virtualenv, easy_install and pip
 
 1.0b2
 -----
 
-* Prevent setup.py from running on non-MacOSX platforms
+* Fix: Prevent setup.py from running on non-MacOSX platforms
 
 1.0b1
 -----

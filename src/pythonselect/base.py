@@ -1,11 +1,27 @@
 # Based on 
 # http://svn.activestate.com/activestate/checkout/komodo/trunk/mozilla/support/set-curr-python.py
 import os
+from glob import glob
 
 
 class Error(Exception):
     pass
 
+
+def get_installed_pyvers():
+    """Return the list of PYVERs currently installed"""
+    pyvers = [os.path.basename(d) for d in \
+              glob("/Library/Frameworks/Python.framework/Versions/?.?")]
+    pyvers.sort(reverse=True)
+    return pyvers
+    
+
+def get_default_pyver():
+    """Return the pyver that is default"""
+    return os.path.basename(
+        os.path.realpath(
+            "/Library/Frameworks/Python.framework/Versions/Current"))
+    
 
 def set_curr_python(pyver):
     pyver_dir = "/Library/Frameworks/Python.framework/Versions/"+pyver
