@@ -35,7 +35,7 @@ def set_curr_python(pyver):
         bin_path = os.path.join("/usr/local/bin", name)
         print "reset '%s'" % bin_path
         fmwk_path = os.path.join(pyver_dir, "bin", name)
-        if os.path.exists(bin_path):
+        if os.path.lexists(bin_path):
             os.remove(bin_path)
         if os.path.exists(fmwk_path):
             os.symlink(fmwk_path, bin_path)
