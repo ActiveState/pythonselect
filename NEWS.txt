@@ -6,10 +6,10 @@
 News
 ====
 
-1.0c1
------
+1.0
+---
 
-* ...
+* New: Accepts -h/-?/--help/help argument to print usage
 
 1.0b3
 -----
