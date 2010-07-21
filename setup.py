@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import sys, os
 
 here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'README.txt')).read()
+README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 version = '1.0c1'
@@ -38,7 +38,7 @@ setup(name='pythonselect',
       author_email='activepython-feedback@activestate.com',
       maintainer='srid',
       maintainer_email='srid@nearfar.org',
-      url='http://bitbucket.org/activestate/pythonselect',
+      url='http://github.com/ActiveState/pythonselect',
       license='MIT',
       packages=find_packages('src'),
       package_dir = {'': 'src'},
