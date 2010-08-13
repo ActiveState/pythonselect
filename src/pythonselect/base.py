@@ -35,7 +35,7 @@ def set_curr_python(pyver):
     os.symlink(pyver, curr_link)
     
     for name in ("python", "pythonw", "python-all", "python-32", "python-64",
-                 "python-config", "pydoc", "idle", "smtpd.py",
+                 "python-config", "pydoc", "idle", "2to3", "smtpd.py", 
                  "pypm", "virtualenv", "easy_install", "pip"):
         bin_path = os.path.join("/usr/local/bin", name)
         print "reset '%s'" % bin_path

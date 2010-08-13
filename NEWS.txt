@@ -5,6 +5,7 @@ News
 ---
 
 * Added arch-specific binaries on MacOSX (python-32, python-64, python-all)
+* Added 2to3 symlink
 
 1.0
 ---
