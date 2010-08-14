@@ -24,6 +24,6 @@ pythonselect is based on Komodo_'s internal `set-curr-python.py`_.
 Roadmap
 =======
 
-Even though this tool is MacOSX-only at the moment, we plan to expand support
-for Windows and Linux.
+Although pythonselect is currently MacOSX-only, Windows and Linux support is in
+the roadmap.
 
