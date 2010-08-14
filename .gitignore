@@ -2,3 +2,7 @@ tmp
 *.egg-info
 *.pyc
 
+bin
+develop-eggs
+dist
+.installed.cfg
