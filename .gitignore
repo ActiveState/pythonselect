@@ -6,3 +6,5 @@ bin
 develop-eggs
 dist
 .installed.cfg
+
+distribute-*.tar.gz
