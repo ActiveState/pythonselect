@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 # Based on 
 # http://svn.activestate.com/activestate/checkout/komodo/trunk/mozilla/support/set-curr-python.py
 import os
@@ -30,7 +32,7 @@ def set_curr_python(pyver):
                     % (pyver_dir, pyver))
     
     curr_link = "/Library/Frameworks/Python.framework/Versions/Current"
-    print "ln -s %s %s" % (pyver, curr_link)
+    print("ln -s %s %s" % (pyver, curr_link))
     os.remove(curr_link)
     os.symlink(pyver, curr_link)
     
@@ -38,7 +40,7 @@ def set_curr_python(pyver):
                  "python-config", "pydoc", "idle", "2to3", "smtpd.py", 
                  "pypm", "virtualenv", "easy_install", "pip"):
         bin_path = os.path.join("/usr/local/bin", name)
-        print "reset '%s'" % bin_path
+        print("reset '%s'" % bin_path)
         fmwk_path = os.path.join(pyver_dir, "bin", name)
         if os.path.lexists(bin_path):
             os.remove(bin_path)

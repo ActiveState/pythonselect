@@ -14,8 +14,8 @@ install_requires = [
 ]
 
 if not sys.platform.startswith('darwin'):
-    raise SystemExit, "error: pythonselect-%s only works on MacOSX, not %s" % (
-        version, sys.platform)
+    raise SystemExit("error: pythonselect-%s only works on MacOSX, not %s" % (
+        version, sys.platform))
 
 setup(name='pythonselect',
       version=version,
@@ -30,6 +30,7 @@ setup(name='pythonselect',
             'License :: OSI Approved :: MIT License',
             'Operating System :: MacOS :: MacOS X',
             'Programming Language :: Python',
+            'Programming Language :: Python :: 3',
             'Topic :: System',
             'Topic :: Utilities',
       ],

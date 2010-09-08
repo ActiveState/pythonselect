@@ -4,7 +4,7 @@ News
 1.2
 ---
 
-* ...
+* Python 3 support
 
 1.1
 ---
