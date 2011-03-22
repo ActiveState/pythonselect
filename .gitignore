@@ -1,6 +1,9 @@
 tmp
 *.egg-info
 *.pyc
+.Python
+include
+lib
 
 bin
 develop-eggs

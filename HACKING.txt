@@ -1,10 +1,8 @@
 Development setup
 =================
 
-  $ python bootstrap.py
-  $ bin/buildout
-
-  $ sudo bin/pythonselect 2.7
+  $ fab init
+  $ bin/pysel
 
 Release HOWTO
 =============
