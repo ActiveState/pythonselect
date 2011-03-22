@@ -43,14 +43,14 @@ setup(name='pythonselect',
       maintainer_email='me@srid.name',
       url='http://github.com/ActiveState/pythonselect',
       license='MIT',
-      py_modules=['pysel'],
+      packages=find_packages('.'),
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
       entry_points={
           'console_scripts': [
-              'pythonselect = pysel:main',
-              'pysel = pysel:main',
+              'pythonselect = pythonselect.pysel:main',
+              'pysel = pythonselect.pysel:main',
           ]
       },
       )
