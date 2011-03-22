@@ -19,6 +19,8 @@ import os
 import sys
 from glob import glob
 
+import six
+
 
 class Error(Exception):
     pass
@@ -39,6 +41,14 @@ class Platform(object):
             
 class WindowsPlatform(Platform):
     
+    def __init__(self):
+        self.env_user = Win32Environment(scope='user')
+        self.env_system = Win32Environment(scope='system')
+        
+    def _get_path(self):
+        return self.env_user.getenv('PATH').split(';') + \
+            self.env_system.getenv('PATH').split(';')
+    
     def get_installed_pyvers(self):
         # TODO: Use windows registry to get Python install paths
         pyvers = [self._pypath2pyver(d)
@@ -47,11 +57,17 @@ class WindowsPlatform(Platform):
         return pyvers
     
     def get_default_pyver(self):
-        for path in os.environ.get('PATH', '').split(';'):
+        for path in self._get_path():
             if os.path.exists(os.path.join(path, 'python.exe')):
                 return self._pypath2pyver(os.path.dirname(path))
     
     def set_curr_python(self, pyver):
+        # 1. re-order %PATH%
+        # 2. re-associate .py and .pyw files
+        # 3. re-order in AppPath so Start > Run > python will pick this version
+        # 4. send broadcast message to all Windows
+        path = self._get_path()
+        print(path)
         raise NotImplementedError
     
     def _pypath2pyver(self, p):
@@ -59,6 +75,43 @@ class WindowsPlatform(Platform):
             p = os.path.dirname(p)
         assert p.lower().startswith(r'c:\python')
         return '{0[0]}.{0[1]}'.format(p[-2:])
+
+
+# http://code.activestate.com/recipes/577621-manage-environment-variables-on-windows/
+class Win32Environment:
+    """Utility class to get/set windows environment variable"""
+    
+    def __init__(self, scope):
+        assert scope in ('user', 'system')
+        self.scope = scope
+        if scope == 'user':
+            self.root = six.moves.winreg.HKEY_CURRENT_USER
+            self.subkey = 'Environment'
+        else:
+            self.root = six.moves.winreg.HKEY_LOCAL_MACHINE
+            self.subkey = r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+            
+    def getenv(self, name, default=''):
+        r = six.moves.winreg
+        key = r.OpenKey(self.root, self.subkey, 0, r.KEY_READ)
+        try:
+            value, _ = r.QueryValueEx(key, name)
+        except WindowsError:
+            value = default
+        return value
+    
+    def setenv(self, name, value):
+        import win32con
+        from win32gui import SendMessage
+        r = six.moves.winreg
+        assert self.scope == 'user', 'setenv supported only for user env'
+        key = r.OpenKey(self.root, self.subkey, 0, r.KEY_ALL_ACCESS)
+        r.SetValueEx(key, name, 0, r.REG_EXPAND_SZ, value)
+        # LOG.info('SetValueEx %s == %s', name, value)
+        r.CloseKey(key)
+        SendMessage(
+            win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, self.subkey)
+    
     
 
 class OSXPlatform(Platform):
@@ -111,6 +164,7 @@ def main():
     elif sys.argv[1] in ('-h', '-?', '--help', 'help'):
         print(__doc__)
     else:
+        p = Platform.get_current()
         p.set_curr_python(sys.argv[1])
 
 
