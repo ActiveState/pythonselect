@@ -5,7 +5,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
-version = '1.3.dev' 
+version = '1.3' + '.dev' 
 
 install_requires = [
     # List your project dependencies here.
@@ -41,14 +41,14 @@ setup(name='pythonselect',
       maintainer_email='me@srid.name',
       url='http://github.com/ActiveState/pythonselect',
       license='MIT',
-      packages=find_packages('src'),
-      package_dir = {'': 'src'},
+      py_modules=['pysel'],
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
       entry_points={
           'console_scripts': [
-              'pythonselect = pythonselect.command:main',
+              'pythonselect = pysel:main',
+              'pysel = pysel:main',
           ]
       },
       )
