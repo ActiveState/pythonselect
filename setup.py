@@ -7,13 +7,6 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 version = '1.3' + '.dev' 
 
-install_requires = [
-    # List your project dependencies here.
-    # For more details, see:
-    # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
-    'six',
-]
-
 if not sys.platform.startswith('darwin') and 'install' in sys.argv:
     raise SystemExit("error: pythonselect-%s supports only MacOSX at the moment, not %s" % (
         version, sys.platform))
@@ -44,9 +37,8 @@ setup(name='pythonselect',
       url='http://github.com/ActiveState/pythonselect',
       license='MIT',
       packages=find_packages('.'),
-      include_package_data=True,
+      include_package_data=False,
       zip_safe=False,
-      install_requires=install_requires,
       entry_points={
           'console_scripts': [
               'pythonselect = pythonselect.pysel:main',

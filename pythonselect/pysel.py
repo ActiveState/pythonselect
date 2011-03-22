@@ -19,7 +19,7 @@ import os
 import sys
 from glob import glob
 
-import six
+import regobj
 
 
 class Error(Exception):
@@ -85,20 +85,21 @@ class Win32Environment:
         assert scope in ('user', 'system')
         self.scope = scope
         if scope == 'user':
-            self.root = six.moves.winreg.HKEY_CURRENT_USER
-            self.subkey = 'Environment'
+            self.root = regobj.HKEY_CURRENT_USER
+            self.envkey = getattr(self.root, 'Environment')
         else:
-            self.root = six.moves.winreg.HKEY_LOCAL_MACHINE
-            self.subkey = r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+            self.root = regobj.HKEY_LOCAL_MACHINE
+            self.envkey = getattr(
+                self.root,
+                r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment')
             
     def getenv(self, name, default=''):
-        r = six.moves.winreg
-        key = r.OpenKey(self.root, self.subkey, 0, r.KEY_READ)
         try:
-            value, _ = r.QueryValueEx(key, name)
-        except WindowsError:
-            value = default
-        return value
+            value = self.envkey[name]
+        except KeyError:
+            return default
+        else:
+            return value.data
     
     def setenv(self, name, value):
         import win32con
@@ -107,7 +108,6 @@ class Win32Environment:
         assert self.scope == 'user', 'setenv supported only for user env'
         key = r.OpenKey(self.root, self.subkey, 0, r.KEY_ALL_ACCESS)
         r.SetValueEx(key, name, 0, r.REG_EXPAND_SZ, value)
-        # LOG.info('SetValueEx %s == %s', name, value)
         r.CloseKey(key)
         SendMessage(
             win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, self.subkey)
