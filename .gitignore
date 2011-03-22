@@ -4,10 +4,9 @@ tmp
 .Python
 include
 lib
-
+Scripts
 bin
-develop-eggs
+
 dist
-.installed.cfg
 
 distribute-*.tar.gz
