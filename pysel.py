@@ -1,7 +1,7 @@
 """Set the current Python to the given version.
 
   Usage:
-    sudo pythonselect <pyver>
+    sudo pysel <pyver>
 
   where "<pyver>" is "<major>.<minor>" for a Python installed under
   '/Library/Frameworks'.
@@ -10,10 +10,9 @@
   Python installed in '/Library/Frameworks' and '/usr/local/bin'.
 
   Without <pyver> argument, print the list of installed Pythons.
-
-  Based on 
-  http://svn.activestate.com/activestate/checkout/komodo/trunk/mozilla/support/set-curr-python.py
 """
+# Based on
+# http://svn.activestate.com/activestate/checkout/komodo/trunk/mozilla/support/set-curr-python.py
 from __future__ import print_function
 
 import os
