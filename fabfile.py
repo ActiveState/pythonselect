@@ -1,3 +1,5 @@
+# Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
+
 import sys
 import os.path as P
 from fabric.api import *

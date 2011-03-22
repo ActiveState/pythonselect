@@ -1,3 +1,4 @@
+# Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
 """Set the current Python to the given version.
 
   Usage:
