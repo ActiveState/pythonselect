@@ -15,6 +15,7 @@
 # Based on
 # http://svn.activestate.com/activestate/checkout/komodo/trunk/mozilla/support/set-curr-python.py
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import sys
@@ -45,31 +46,50 @@ class WindowsPlatform(Platform):
     def __init__(self):
         self.env_user = Win32Environment(scope='user')
         self.env_system = Win32Environment(scope='system')
+        self.REG_PYTHONCORE = regobj.HKEY_LOCAL_MACHINE.Software.Python.Pythoncore
         
-    def _get_path(self):
-        return self.env_user.getenv('PATH').split(';') + \
-            self.env_system.getenv('PATH').split(';')
-    
+    def _get_user_path(self):
+        """Return user's path normalized"""
+        return list_unique(
+            [os.path.normcase(os.path.abspath(p))
+            for p in self.env_user.getenv('PATH').split(';')])
+        
+    def _get_pythons(self):
+        pythons = {}
+        for pyver in self.REG_PYTHONCORE:
+            pypath = list(pyver.InstallPath.values())[0].data
+            pypath = os.path.normcase(os.path.abspath(pypath))
+            pythons[pypath] = pyver.name
+        return pythons
+            
     def get_installed_pyvers(self):
-        # TODO: Use windows registry to get Python install paths
-        pyvers = [self._pypath2pyver(d)
-                  for d in glob(r"C:\Python??")]
-        pyvers.sort(reverse=True)
-        return pyvers
-    
+        return self._get_pythons().values()
+        
     def get_default_pyver(self):
-        for path in self._get_path():
+        pythons = self._get_pythons()
+        print(pythons)
+        for path in self._get_user_path():
             if os.path.exists(os.path.join(path, 'python.exe')):
-                return self._pypath2pyver(os.path.dirname(path))
+                # TODO: allow case-insensitive path comparison
+                if path in pythons:
+                    return pythons[path]
     
     def set_curr_python(self, pyver):
         # 1. re-order %PATH%
         # 2. re-associate .py and .pyw files
         # 3. re-order in AppPath so Start > Run > python will pick this version
         # 4. send broadcast message to all Windows
-        path = self._get_path()
+        pythons = dict_reverse(self._get_pythons())
+        pypath = pythons[pyver]
+        pypath_scripts = os.path.join(pypath, 'scripts')
+        path = self._get_user_path()
         print(path)
-        raise NotImplementedError
+        # put pypath in front of PATH
+        path.remove(pypath) if pypath in path else None
+        path.remove(pypath_scripts) if pypath_scripts in path else None
+        path[0:0] = [pypath, pypath_scripts]
+        print(path)
+        self.env_user.setenv('PATH', ';'.join(path))
     
     def _pypath2pyver(self, p):
         if p.endswith('\\'):
@@ -87,9 +107,11 @@ class Win32Environment:
         self.scope = scope
         if scope == 'user':
             self.root = regobj.HKEY_CURRENT_USER
+            self.subkey = 'Environment'
             self.envkey = getattr(self.root, 'Environment')
         else:
             self.root = regobj.HKEY_LOCAL_MACHINE
+            self.subkey = r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
             self.envkey = getattr(
                 self.root,
                 r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment')
@@ -105,11 +127,7 @@ class Win32Environment:
     def setenv(self, name, value):
         import win32con
         from win32gui import SendMessage
-        r = six.moves.winreg
-        assert self.scope == 'user', 'setenv supported only for user env'
-        key = r.OpenKey(self.root, self.subkey, 0, r.KEY_ALL_ACCESS)
-        r.SetValueEx(key, name, 0, r.REG_EXPAND_SZ, value)
-        r.CloseKey(key)
+        self.envkey[name] = value
         SendMessage(
             win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, self.subkey)
     
@@ -151,6 +169,21 @@ class OSXPlatform(Platform):
                 os.remove(bin_path)
             if os.path.exists(fmwk_path):
                 os.symlink(fmwk_path, bin_path)
+
+def list_unique(l):
+    """Return a new list containing unique elements from `l` but preserving order"""
+    l2 = []
+    found = set()
+    for x in l:
+        if x not in found:
+            found.add(x)
+            l2.append(x)
+    return l2
+
+
+def dict_reverse(d):
+    """Reverse the keys, values in a dictionary"""
+    return dict((v, k) for k, v in d.items())
 
 
 def main():
