@@ -48,11 +48,11 @@ class WindowsPlatform(Platform):
         self.env_system = Win32Environment(scope='system')
         self.REG_PYTHONCORE = regobj.HKEY_LOCAL_MACHINE.Software.Python.Pythoncore
         
-    def _get_user_path(self):
-        """Return user's path normalized"""
+    def _get_path(self, env):
+        """Return %PATH% normalized"""
         return list_unique(
-            [os.path.normcase(os.path.abspath(p))
-            for p in self.env_user.getenv('PATH').split(';')])
+            [os.path.normcase(p)
+            for p in env.getenv('PATH').split(';')])
         
     def _get_pythons(self):
         pythons = {}
@@ -68,7 +68,8 @@ class WindowsPlatform(Platform):
     def get_default_pyver(self):
         pythons = self._get_pythons()
         print(pythons)
-        for path in self._get_user_path():
+        # TODO: support user's PATH as well
+        for path in self._get_path(self.env_system):
             if os.path.exists(os.path.join(path, 'python.exe')):
                 # TODO: allow case-insensitive path comparison
                 if path in pythons:
@@ -82,14 +83,17 @@ class WindowsPlatform(Platform):
         pythons = dict_reverse(self._get_pythons())
         pypath = pythons[pyver]
         pypath_scripts = os.path.join(pypath, 'scripts')
-        path = self._get_user_path()
+        # TODO: support user's PATH as well
+        path = self._get_path(self.env_system)
         print(path)
         # put pypath in front of PATH
         path.remove(pypath) if pypath in path else None
         path.remove(pypath_scripts) if pypath_scripts in path else None
         path[0:0] = [pypath, pypath_scripts]
         print(path)
-        self.env_user.setenv('PATH', ';'.join(path))
+        self.env_system.setenv('PATH', ';'.join(path))
+        print('TODO: set .py assoc, AppPath, etc..')
+        print('FIXME: you may want to reboot your computer for PATH changes to take effect')
     
     def _pypath2pyver(self, p):
         if p.endswith('\\'):
@@ -129,7 +133,7 @@ class Win32Environment:
         from win32gui import SendMessage
         self.envkey[name] = value
         SendMessage(
-            win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, self.subkey)
+            win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, 'Environment')
     
     
 
