@@ -51,7 +51,7 @@ class WindowsPlatform(Platform):
     def _get_path(self, env):
         """Return %PATH% normalized"""
         return list_unique(
-            [os.path.normcase(p)
+            [os.path.normcase(os.path.normpath(p))
             for p in env.getenv('PATH').split(';')])
         
     def _get_pythons(self):
@@ -70,6 +70,7 @@ class WindowsPlatform(Platform):
         print(pythons)
         # TODO: support user's PATH as well
         for path in self._get_path(self.env_system):
+            print('PATH is', path)
             if os.path.exists(os.path.join(path, 'python.exe')):
                 # TODO: allow case-insensitive path comparison
                 if path in pythons:
