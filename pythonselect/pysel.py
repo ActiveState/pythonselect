@@ -67,12 +67,9 @@ class WindowsPlatform(Platform):
         
     def get_default_pyver(self):
         pythons = self._get_pythons()
-        print(pythons)
         # TODO: support user's PATH as well
         for path in self._get_path(self.env_system):
-            print('PATH is', path)
             if os.path.exists(os.path.join(path, 'python.exe')):
-                # TODO: allow case-insensitive path comparison
                 if path in pythons:
                     return pythons[path]
     
@@ -132,7 +129,19 @@ class Win32Environment:
     def setenv(self, name, value):
         import win32con
         from win32gui import SendMessage
-        self.envkey[name] = value
+        try:
+            self.envkey[name] = value
+        except OSError as e:
+            if sys.platform == 'win32' and isinstance(e, WindowsError):
+                if e.winerror == 5:
+                    # We received 'Access is denied' error, which means that we
+                    # are on Vista/Win7 and the user needs to run this script
+                    # elevated. XXX: automate this somehow using UAC.
+                    raise SystemExit('ERROR: '
+                        'Access denied while setting system environment '
+                        'variable; please run this program from an '
+                        'Administrator prompt: %s' % e)
+            raise
         SendMessage(
             win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, 'Environment')
     
