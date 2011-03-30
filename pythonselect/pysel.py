@@ -193,17 +193,39 @@ class OSXPlatform(Platform):
         print("ln -s %s %s" % (pyver, curr_link))
         os.remove(curr_link)
         os.symlink(pyver, curr_link)
-        
-        for name in ("python", "pythonw", "python-all", "python-32", "python-64",
-                     "python-config", "pydoc", "idle", "2to3", "smtpd.py", 
-                     "pypm", "virtualenv", "easy_install", "pip"):
+
+        for name in self._get_executables(pyver.split('.')):
             bin_path = os.path.join("/usr/local/bin", name)
-            print("reset '%s'" % bin_path)
             fmwk_path = os.path.join(pyver_dir, "bin", name)
-            if os.path.lexists(bin_path):
-                os.remove(bin_path)
             if os.path.exists(fmwk_path):
+                print("reset '%s'" % bin_path)
+                if os.path.lexists(bin_path):
+                    os.remove(bin_path)
                 os.symlink(fmwk_path, bin_path)
+
+    def _get_executables(self, pyver):
+        """Return *potential* Python executables installed by ActivePython"""
+        def versioned(exes):
+            for exe in exes:
+                f = lambda s: s.format(exe=exe, pyver=pyver)
+                yield exe
+                yield f('{exe}{pyver[0]}')               # standard PSF style, eg: pydoc3
+                yield f('{exe}{pyver[0]}.{pyver[1]}')    # standard PSF style, eg: pydoc3
+                yield f('{exe}-{pyver[0]}.{pyver[1]}')   # setuptools style, eg: pypm-3.2
+
+        pythons = ['python', 'pythonw']
+        pythons += list(versioned(pythons))
+
+        pythons_config = [p+'-config' for p in pythons]
+
+        pythons_arch = [p+'-32' for p in pythons] + [p+'-64' for p in pythons]
+
+        others = ['pydoc', 'idle', '2to3',
+                  'virtualenv', 'easy_install', 'pip',
+                  'pypm']
+        others += list(versioned(others))
+
+        return pythons + pythons_config + pythons_arch + others
 
 
 def _push_to_top_of_PATH(path_list, path):
