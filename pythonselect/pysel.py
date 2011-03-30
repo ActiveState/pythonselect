@@ -45,6 +45,7 @@ class Platform(object):
 class WindowsPlatform(Platform):
     
     def __init__(self):
+        print('ALERT: Windows port of `pythonselect` is experimental')
         self.env_user = Win32Environment(scope='user')
         self.env_system = Win32Environment(scope='system')
         self.REG_PYTHONCORE = regobj.HKEY_LOCAL_MACHINE.Software.Python.Pythoncore
@@ -89,19 +90,28 @@ class WindowsPlatform(Platform):
         # 1. re-order %PATH%
         # 2. re-associate .py and .pyw files
         # 3. re-order in AppPath so Start > Run > python will pick this version
-        # 4. send broadcast message to all Windows
+        # 4. send broadcast message to all Windows (doesn't seem to work)
         pythons = dict_reverse(self._get_pythons())
         pypath = pythons[pyver]
         pypath_scripts = os.path.join(pypath, 'scripts')
         # TODO: support user's PATH as well
+
+        # Re-order PATH
         path = self._get_path(self.env_system)
-        print(path)
         _push_to_top_of_PATH(path, pypath_scripts)
         _push_to_top_of_PATH(path, pypath)
-        print(path)
         self.env_system.setenv('PATH', ';'.join(path))
-        print('TODO: set .py assoc, AppPath, etc..')
         print('FIXME: you may want to reboot (or logoff) your computer for PATH changes to take effect')
+
+        # Associate .py file, etc..
+        open_cmd = '"%s" "%%1" %%*' % os.path.join(pypath, 'python.exe')
+        regobj.HKEY_CLASSES_ROOT.get_subkey('Python.File').shell.open.command = open_cmd
+        regobj.HKEY_CLASSES_ROOT.get_subkey('Python.CompiledFile').shell.open.command = open_cmd
+        # TODO: assign .pyc as well
+
+        # Add AppPath
+        # TODO: handle access errors
+        regobj.HKEY_LOCAL_MACHINE.Software.Microsoft.Windows.CurrentVersion.get_subkey('App Paths').set_subkey('python.exe', os.path.join(pypath, 'python.exe'))
     
     def _pypath2pyver(self, p):
         if p.endswith('\\'):
@@ -155,7 +165,6 @@ class Win32Environment:
             raise
         r = SendMessage(
             win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, 'Environment')
-        print(r)
     
     
 
