@@ -1,10 +1,10 @@
 News
 ====
 
-1.3
----
+1.3.dev
+-------
 
-* Make it a single-file module (simple is better)
+* Partial Windows support (work in progress)
 
 1.2
 ---
