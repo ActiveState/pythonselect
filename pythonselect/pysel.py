@@ -21,7 +21,8 @@ import os
 import sys
 from glob import glob
 
-import regobj
+if sys.platform == 'win32':
+    import regobj
 
 
 class Error(Exception):
