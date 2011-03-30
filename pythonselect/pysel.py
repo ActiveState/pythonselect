@@ -50,12 +50,22 @@ class WindowsPlatform(Platform):
         self.REG_PYTHONCORE = regobj.HKEY_LOCAL_MACHINE.Software.Python.Pythoncore
         
     def _get_path(self, env):
-        """Return %PATH% normalized"""
+        """Return %PATH% as a list of normalized paths"""
         return list_unique(
+            # Note: using `normpath` instead of `abspath` to avoid prepending
+            # CWD to PATH elements with environment variables such as
+            # `%system..%\...`
             [os.path.normcase(os.path.normpath(p))
             for p in env.getenv('PATH').split(';')])
         
     def _get_pythons(self):
+        """Return a dictionary of installed Pythons
+
+        eg.: {
+            r'c:\python27': '2.7',
+            ...
+        }
+        """
         pythons = {}
         for pyver in self.REG_PYTHONCORE:
             pypath = list(pyver.InstallPath.values())[0].data
@@ -67,12 +77,13 @@ class WindowsPlatform(Platform):
         return self._get_pythons().values()
         
     def get_default_pyver(self):
-        pythons = self._get_pythons()
-        # TODO: support user's PATH as well
+        installed_pythons = self._get_pythons()
+        # TODO: support user's PATH as well, though ActivePython uses system's
+        # PATH by default.
         for path in self._get_path(self.env_system):
             if os.path.exists(os.path.join(path, 'python.exe')):
-                if path in pythons:
-                    return pythons[path]
+                if path in installed_pythons:
+                    return installed_pythons[path]
     
     def set_curr_python(self, pyver):
         # 1. re-order %PATH%
@@ -85,14 +96,12 @@ class WindowsPlatform(Platform):
         # TODO: support user's PATH as well
         path = self._get_path(self.env_system)
         print(path)
-        # put pypath in front of PATH
-        path.remove(pypath) if pypath in path else None
-        path.remove(pypath_scripts) if pypath_scripts in path else None
-        path[0:0] = [pypath, pypath_scripts]
+        _push_to_top_of_PATH(path, pypath_scripts)
+        _push_to_top_of_PATH(path, pypath)
         print(path)
         self.env_system.setenv('PATH', ';'.join(path))
         print('TODO: set .py assoc, AppPath, etc..')
-        print('FIXME: you may want to reboot your computer for PATH changes to take effect')
+        print('FIXME: you may want to reboot (or logoff) your computer for PATH changes to take effect')
     
     def _pypath2pyver(self, p):
         if p.endswith('\\'):
@@ -132,6 +141,7 @@ class Win32Environment:
         from win32gui import SendMessage
         try:
             self.envkey[name] = value
+            self.envkey.flush()
         except OSError as e:
             if sys.platform == 'win32' and isinstance(e, WindowsError):
                 if e.winerror == 5:
@@ -143,8 +153,9 @@ class Win32Environment:
                         'variable; please run this program from an '
                         'Administrator prompt: %s' % e)
             raise
-        SendMessage(
+        r = SendMessage(
             win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, 'Environment')
+        print(r)
     
     
 
@@ -184,6 +195,17 @@ class OSXPlatform(Platform):
                 os.remove(bin_path)
             if os.path.exists(fmwk_path):
                 os.symlink(fmwk_path, bin_path)
+
+
+def _push_to_top_of_PATH(path_list, path):
+    """Push `path` to the top of `path_list`
+
+    If `path` doesn't already exists, simply prepend
+    """
+    if path in path_list:
+        path_list.remove(path)
+    path_list[0:0] = [path]
+
 
 def list_unique(l):
     """Return a new list containing unique elements from `l` but preserving order"""

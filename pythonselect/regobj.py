@@ -328,7 +328,7 @@ class Key(object):
           probably isn't.
 
         """
-        _winref.FlushKey(self.hkey)
+        _winreg.FlushKey(self.hkey)
 
     def __eq__(self,key):
         try:
