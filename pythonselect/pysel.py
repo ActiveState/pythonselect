@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 import os
 import sys
 from glob import glob
+from subprocess import check_call
+
 
 if sys.platform == 'win32':
     import regobj
@@ -101,7 +103,6 @@ class WindowsPlatform(Platform):
         _push_to_top_of_PATH(path, pypath_scripts)
         _push_to_top_of_PATH(path, pypath)
         self.env_system.setenv('PATH', ';'.join(path))
-        print('FIXME: you may want to reboot (or logoff) your computer for PATH changes to take effect')
 
         # Associate .py file, etc..
         open_cmd = '"%s" "%%1" %%*' % os.path.join(pypath, 'python.exe')
@@ -148,7 +149,7 @@ class Win32Environment:
     
     def setenv(self, name, value):
         import win32con
-        from win32gui import SendMessage
+        from win32api import SendMessage
         try:
             self.envkey[name] = value
             self.envkey.flush()
@@ -163,9 +164,11 @@ class Win32Environment:
                         'variable; please run this program from an '
                         'Administrator prompt: %s' % e)
             raise
-        r = SendMessage(
-            win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, 'Environment')
-    
+        # For some strange reason, calling SendMessage from the current process
+        # doesn't propagate environment changes at all.
+        # TODO: handle CalledProcessError (for assert)
+        check_call('''\
+"%s" -c "import win32api, win32con; assert win32api.SendMessage(win32con.HWND_BROADCAST, win32con.WM_SETTINGCHANGE, 0, 'Environment')"''' % sys.executable)
     
 
 class OSXPlatform(Platform):
