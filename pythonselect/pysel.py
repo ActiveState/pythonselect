@@ -87,6 +87,17 @@ class WindowsPlatform(Platform):
             if os.path.exists(os.path.join(path, 'python.exe')):
                 if path in installed_pythons:
                     return installed_pythons[path]
+
+    def list_pythons(self):
+        # Print the list of Pythons installed when no argument is passed
+        default_pyver = self.get_default_pyver()
+        for pyver in self.get_installed_pyvers():
+            current = (pyver == default_pyver)
+            if current:
+                print('* Python %s' % pyver)
+            else:
+                print('  Python %s (type "pysel %s" to set as current)' % (
+                        pyver, pyver))
     
     def set_curr_python(self, pyver):
         # 1. re-order %PATH%
@@ -185,6 +196,17 @@ class OSXPlatform(Platform):
         return os.path.basename(
             os.path.realpath(
                 "/Library/Frameworks/Python.framework/Versions/Current"))
+
+    def list_pythons(self):
+        # Print the list of Pythons installed when no argument is passed
+        default_pyver = self.get_default_pyver()
+        for pyver in self.get_installed_pyvers():
+            current = (pyver == default_pyver)
+            if current:
+                print('* Python %s' % pyver)
+            else:
+                print('  Python %s (type "sudo pysel %s" to set as current)' % (
+                        pyver, pyver))
     
     def set_curr_python(self, pyver):
         pyver_dir = "/Library/Frameworks/Python.framework/Versions/"+pyver
@@ -260,18 +282,14 @@ def dict_reverse(d):
 def main():
     if len(sys.argv[1:]) != 1:
         p = Platform.get_current()
-        # Print the list of Pythons installed when no argument is passed
-        default_pyver = p.get_default_pyver()
-        for pyver in p.get_installed_pyvers():
-            status = 'current' if pyver == default_pyver else (
-                'type "sudo pythonselect %s" to set as current' % pyver)
-            print('\t%s\t(%s)' % (pyver, status))
+        p.list_pythons()
     elif sys.argv[1] in ('-h', '-?', '--help', 'help'):
         print(__doc__)
     else:
         p = Platform.get_current()
         p.set_curr_python(sys.argv[1])
-
+        print()
+        p.list_pythons()
 
 if __name__ == '__main__':
     main()
