@@ -46,7 +46,7 @@ class Platform(object):
     def list_pythons(self):
         # Print the list of Pythons installed when no argument is passed
         default_pyver = self.get_default_pyver()
-        for pyver in self.get_installed_pyvers():
+        for pyver in sorted(self.get_installed_pyvers(), reverse=True):
             current = (pyver == default_pyver)
             if current:
                 print('* Python %s' % pyver)
