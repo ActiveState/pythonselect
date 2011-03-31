@@ -4,7 +4,7 @@ News
 1.3.dev
 -------
 
-* Partial Windows support (work in progress)
+* Experimental Windows support (work in progress)
 * Issue 2: restore all possible symlinks in OSX
 
 1.2
