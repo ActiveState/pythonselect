@@ -108,7 +108,10 @@ class WindowsPlatform(Platform):
         # 3. re-order in AppPath so Start > Run > python will pick this version
         # 4. send broadcast message to all Windows (doesn't seem to work)
         pythons = dict_reverse(self._get_pythons())
-        pypath = pythons[pyver]
+        try:
+            pypath = pythons[pyver]
+        except KeyError:
+            raise Error("Python %s is not installed" % pyver)
         pypath_scripts = os.path.join(pypath, 'scripts')
         # TODO: support user's PATH as well
 
