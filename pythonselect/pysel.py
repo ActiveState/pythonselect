@@ -42,9 +42,23 @@ class Platform(object):
             return OSXPlatform()
         else:
             raise NotImplementedError('unsupported platform: %s' % sys.platform)
+
+    def list_pythons(self):
+        # Print the list of Pythons installed when no argument is passed
+        default_pyver = self.get_default_pyver()
+        for pyver in self.get_installed_pyvers():
+            current = (pyver == default_pyver)
+            if current:
+                print('* Python %s' % pyver)
+            else:
+                print('  Python %s (type "%s" to set as current)' % (
+                        pyver, self.SET_CMD % pyver))
+
             
             
 class WindowsPlatform(Platform):
+
+    SET_CMD = "pysel %s"
     
     def __init__(self):
         print('ALERT: Windows port of `pythonselect` is experimental')
@@ -88,17 +102,6 @@ class WindowsPlatform(Platform):
                 if path in installed_pythons:
                     return installed_pythons[path]
 
-    def list_pythons(self):
-        # Print the list of Pythons installed when no argument is passed
-        default_pyver = self.get_default_pyver()
-        for pyver in self.get_installed_pyvers():
-            current = (pyver == default_pyver)
-            if current:
-                print('* Python %s' % pyver)
-            else:
-                print('  Python %s (type "pysel %s" to set as current)' % (
-                        pyver, pyver))
-    
     def set_curr_python(self, pyver):
         # 1. re-order %PATH%
         # 2. re-associate .py and .pyw files
@@ -184,6 +187,8 @@ class Win32Environment:
 
 class OSXPlatform(Platform):
 
+    SET_CMD = "sudo pysel %s"
+
     def get_installed_pyvers(self):
         """Return the list of PYVERs currently installed"""
         pyvers = [os.path.basename(d) for d in \
@@ -196,17 +201,6 @@ class OSXPlatform(Platform):
         return os.path.basename(
             os.path.realpath(
                 "/Library/Frameworks/Python.framework/Versions/Current"))
-
-    def list_pythons(self):
-        # Print the list of Pythons installed when no argument is passed
-        default_pyver = self.get_default_pyver()
-        for pyver in self.get_installed_pyvers():
-            current = (pyver == default_pyver)
-            if current:
-                print('* Python %s' % pyver)
-            else:
-                print('  Python %s (type "sudo pysel %s" to set as current)' % (
-                        pyver, pyver))
     
     def set_curr_python(self, pyver):
         pyver_dir = "/Library/Frameworks/Python.framework/Versions/"+pyver
