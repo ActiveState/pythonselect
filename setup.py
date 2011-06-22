@@ -35,7 +35,7 @@ setup(name='pythonselect',
       author='ActiveState',
       author_email='activepython-feedback@activestate.com',
       maintainer='Sridhar Ratnakumar',
-      maintainer_email='me@srid.name',
+      maintainer_email='github@srid.name',
       url='http://github.com/ActiveState/pythonselect',
       license='MIT',
       packages=find_packages('.'),
@@ -43,7 +43,6 @@ setup(name='pythonselect',
       zip_safe=False,
       entry_points={
           'console_scripts': [
-              'pythonselect = pythonselect.pysel:main',
               'pysel = pythonselect.pysel:main',
           ]
       },
