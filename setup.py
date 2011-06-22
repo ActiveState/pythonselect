@@ -1,4 +1,4 @@
-# Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
+# Copyright (c) 2011 ActiveState Software Inc. All rights reserved.
 
 from setuptools import setup, find_packages
 import sys, os
@@ -7,25 +7,24 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
-version = '1.3' + '.dev' 
+version = '1.3' # + '.dev' 
 
-if not sys.platform.startswith('darwin') and 'install' in sys.argv:
-    raise SystemExit("error: pythonselect-%s supports only MacOSX at the moment, not %s" % (
-        version, sys.platform))
+if (sys.platform not in ['darwin', 'win32']) and 'install' in sys.argv:
+    raise SystemExit(
+        "error: pythonselect-%s supports only OSX and Windows at the moment, not %s" % (
+            version, sys.platform))
 
 
 setup(name='pythonselect',
       version=version,
-      description="A tool to set current Python version (currently MacOSX only)",
+      description="A tool to set current Python version",
       long_description=README + '\n\n' + NEWS,
       classifiers=[
             'Development Status :: 5 - Production/Stable',
             'Environment :: Console',
-            'Environment :: MacOS X',
             'Intended Audience :: Developers',
             'Intended Audience :: System Administrators',
             'License :: OSI Approved :: MIT License',
-            'Operating System :: MacOS :: MacOS X',
             'Programming Language :: Python',
             'Programming Language :: Python :: 3',
             'Topic :: System',

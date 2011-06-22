@@ -12,21 +12,23 @@ Python:
     or
     C:\> pysel 2.7
 
-On **OSX**, pythonselect does this by creating appropriate symlinks in
-``/usr/local/bin`` (hence ``sudo`` is required) targetting the necessary
-binaries in your non-system framework Python install at
-``/Library/Frameworks/Python.framework``.
+How does it work?
+-----------------
 
-On **Windows**, pythonselect does this by manipulating the system ``%PATH%``
-environment variable, `AppPath`_ and .py/.pyw associations. You will have to
-launch a new Command Prompt. Windows support is **experimental**. Note that on
-Vista and Windows 7, ``pysel`` must be run from an Administrator Command Window.
+On **OSX**, pythonselect creates symlinks in ``/usr/local/bin`` (hence ``sudo``
+is required) linking to appropriate binaries in your non-system framework Python
+install at ``/Library/Frameworks/Python.framework``.
+
+On **Windows**, pythonselect manipulates the system ``%PATH%`` environment
+variable, `AppPath`_ and .py/.pyw associations. You will have to launch a new
+Command Prompt. Windows support is **experimental**. Note that on Vista and
+Windows 7, ``pysel`` must be run from an Administrator Command Window.
 
 
 Credits
 =======
 
-pythonselect is based on Komodo_'s internal `set-curr-python.py`_.
+pythonselect is originally based on Komodo_'s internal `set-curr-python.py`_.
 
 
 Roadmap
