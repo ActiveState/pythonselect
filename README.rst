@@ -26,13 +26,13 @@ Windows 7, ``pysel`` must be run from an Administrator Command Window.
 
 
 Credits
-=======
+-------
 
 pythonselect is originally based on Komodo_'s internal `set-curr-python.py`_.
 
 
 Roadmap
-=======
+-------
 
 Linux support is on the horizon.
 
